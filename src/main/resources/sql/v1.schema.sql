@@ -811,7 +811,7 @@ create table usq_book_index (
 
 create table usq_books (
   book_id bigserial primary key,
-  bible_id bigint not null references usq_bibles(schema_id),
+  bible_id bigint not null references usq_bibles(bible_id),
   book_index_id bigint not null references usq_book_index(book_index_id),
   meta jsonb,
   unique (bible_id, book_index_id)
@@ -838,6 +838,7 @@ create table usq_word_index (
   language_index varchar(64) not null,
   language_id bigserial not null,
   word varchar(64) not null,
+  meta jsonb,
   unique (language_index, language_id, word)
 );
 
@@ -862,6 +863,7 @@ create table usq_chapter_starts_alignment (
   chapter_id_1 bigint not null references usq_chapters(chapter_id),
   chapter_id_2 bigint not null references usq_chapters(chapter_id),
   alignment usq_alignment_type not null,
+  meta jsonb,
   unique (chapter_id_1, chapter_id_2)
 );
 
@@ -870,6 +872,7 @@ create table usq_chapter_stops_alignment (
   chapter_id_1 bigint not null references usq_chapters(chapter_id),
   chapter_id_2 bigint not null references usq_chapters(chapter_id),
   alignment usq_alignment_type not null,
+  meta jsonb,
   unique (chapter_id_1, chapter_id_2)
 );
 
@@ -878,6 +881,7 @@ create table usq_verse_starts_alignment (
   verse_id_1 bigint not null references usq_verses(verse_id),
   verse_id_2 bigint not null references usq_verses(verse_id),
   alignment usq_alignment_type not null,
+  meta jsonb,
   unique (verse_id_1, verse_id_2)
 );
 
@@ -886,6 +890,7 @@ create table usq_verse_stops_alignment (
   verse_id_1 bigint not null references usq_verses(verse_id),
   verse_id_2 bigint not null references usq_verses(verse_id),
   alignment usq_alignment_type not null,
+  meta jsonb,
   unique (verse_id_1, verse_id_2)
 );
 
@@ -903,7 +908,6 @@ create table usq_word_to_verse_references (
   source_word bigint not null references usq_word_references(word_ref_id),
   target_verse bigint not null references usq_verses(verse_id),
   meta jsonb
-
 );
 
 create table usq_word_to_chapter_references (
