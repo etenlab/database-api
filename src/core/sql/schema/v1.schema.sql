@@ -155,17 +155,19 @@ create table site_text_keys (
   language_table varchar(64) not null,
   language_id bigint not null,
   site_text_key varchar(512) not null,
-  description varchar(512)
+  description varchar(512),
+  unique (app, site_text_key)
 );
 
 -- site text translation ---------------------------------------------------
 create table site_text_translations(
   id bigserial primary key,
-  user_id varchar(512) not null, -- prolly will change, not sure how we will reference users yet
   site_text bigint not null references site_text_keys(id),
   language_table varchar(64) not null,
   language_id bigint not null,
-  site_text_translation varchar(512) not null
+  user_id varchar(512) not null, -- prolly will change, not sure how we will reference users yet
+  site_text_translation varchar(512) not null,
+  unique (site_text, site_text_translation)
 );
 
 -- voting ---------------------------------------------------
