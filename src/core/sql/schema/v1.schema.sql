@@ -20,12 +20,6 @@ create table database_version_control (
   completed timestamp default current_timestamp
 );
 
-
-create type table_names_enum as enum (
-  -- need to add all table names
-  'site_text_translations'
-);
-
 -- AUTHENTICATION ---------------------------------------------------
 
 create table users (
@@ -132,11 +126,6 @@ create table notifications (
 create index on notifications (user_id, is_notified);
 
 -- language skill ---------------------------------------------------
-create type language_tables_enum as enum(
-  'iso_639_3',
-  'uf-languages'
-);
-
 create type language_skill_enum as enum (
   '1',
   '2',
@@ -148,7 +137,7 @@ create type language_skill_enum as enum (
 create table language_skills (
   id bigserial primary key,
   user_id varchar(512) not null, -- prolly will change, not sure how we will reference users yet
-  language_table language_tables_enum not null,
+  language_table varchar(64) not null,
   language_id bigint not null,
   skill_level language_skill_enum not null,
   unique (user_id, language_table, language_id)
@@ -163,35 +152,40 @@ create table app_list (
 create table site_text_keys (
   id bigserial primary key,
   app bigint not null references app_list(id),
-  language_table language_tables_enum not null,
+  language_table varchar(64) not null,
   language_id bigint not null,
   site_text_key varchar(512) not null,
-  description varchar(512)
+  description varchar(512),
+  unique (app, site_text_key)
 );
 
 -- site text translation ---------------------------------------------------
 create table site_text_translations(
   id bigserial primary key,
-  user_id varchar(512) not null, -- prolly will change, not sure how we will reference users yet
   site_text bigint not null references site_text_keys(id),
-  language_table language_tables_enum not null,
+  language_table varchar(64) not null,
   language_id bigint not null,
-  site_text_translation varchar(512) not null
+  user_id varchar(512) not null, -- prolly will change, not sure how we will reference users yet
+  site_text_translation varchar(512) not null,
+  unique (site_text, site_text_translation)
 );
 
 -- voting ---------------------------------------------------
 create table votes (
   id bigserial primary key,
-  table_name table_names_enum not null,
+  table_name varchar(64) not null,
   row bigint not null,
-  up bool not null -- true = up vote, false = down vote, delete record to remove vote from user
+  user_id varchar(512),
+  up bool not null, -- true = up vote, false = down vote, delete record to remove vote from user
+  unique (table_name, row, user_id)
 );
 
 -- discussion ---------------------------------------------------
 create table discussions (
   id bigserial primary key,
-  table_name table_names_enum not null,
-  row bigint not null
+  table_name varchar(64) not null,
+  row bigint not null,
+  unique (table_name, row)
 );
 
 create table posts (
@@ -211,6 +205,13 @@ create table posts (
 );
 
 create index posts_search_gin on posts using gin (search_text);
+
+create table reactions (
+  id bigserial primary key,
+  user_id varchar(512) not null, -- will change, we use sso to track users
+  content bigint not null, -- will change, not sure what format reactions need to take just yet
+  unique (user_id, content)
+);
 
 -- DATASETS ---------------------------------------------------------
 
@@ -798,158 +799,3 @@ create table glottolog_family(
     child_languages int,
     top_level_family int
 );
-
-
--- USQ - Universal Scripture SQL
-
-create table usq_schemas (
-  schema_id bigserial primary key,
-  name varchar(128) unique not null,
-  meta jsonb
-);
-
-create table usq_bibles (
-  bible_id bigserial primary key,
-  language_index varchar(64) not null,
-  language_id bigserial not null,
-  name varchar(256) not null,
-  meta jsonb,
-  unique (language_index, language_id, name)
-);
-
-create table usq_book_index (
-  book_index_id bigserial primary key,
-  name varchar(64) not null unique,
-  meta jsonb
-);
-
-create table usq_books (
-  book_id bigserial primary key,
-  bible_id bigint not null references usq_bibles(bible_id),
-  book_index_id bigint not null references usq_book_index(book_index_id),
-  meta jsonb,
-  unique (bible_id, book_index_id)
-);
-
-create table usq_chapters (
-  chapter_id bigserial primary key,
-  book_id bigint not null references usq_books(book_id),
-  chapter_number int not null,
-  meta jsonb,
-  unique (book_id, chapter_number)
-);
-
-create table usq_verses (
-  verse_id bigserial primary key,
-  chapter_id bigint not null references usq_chapters(chapter_id),
-  verse_number int not null,
-  meta jsonb,
-  unique (chapter_id, verse_number)
-);
-
-create table usq_word_index (
-  word_index_id bigserial primary key,
-  language_index varchar(64) not null,
-  language_id bigserial not null,
-  word varchar(64) not null,
-  meta jsonb,
-  unique (language_index, language_id, word)
-);
-
-create table usq_word_references (
-  word_ref_id bigserial primary key,
-  verse_id bigint not null references usq_verses(verse_id),
-  word_index_id bigint not null references usq_word_index(word_index_id),
-  word_number int not null,
-  meta jsonb
-);
-
--- Alignment References (two_way)
-
-create type usq_alignment_type as enum (
-  '>', 
-  '<',
-  '=' 
-);
-
-create table usq_chapter_starts_alignment (
-  chapter_starts_alignment_id bigserial primary key,
-  chapter_id_1 bigint not null references usq_chapters(chapter_id),
-  chapter_id_2 bigint not null references usq_chapters(chapter_id),
-  alignment usq_alignment_type not null,
-  meta jsonb,
-  unique (chapter_id_1, chapter_id_2)
-);
-
-create table usq_chapter_stops_alignment (
-  chapter_stops_alignment_id bigserial primary key,
-  chapter_id_1 bigint not null references usq_chapters(chapter_id),
-  chapter_id_2 bigint not null references usq_chapters(chapter_id),
-  alignment usq_alignment_type not null,
-  meta jsonb,
-  unique (chapter_id_1, chapter_id_2)
-);
-
-create table usq_verse_starts_alignment (
-  verse_starts_alignment_id bigserial primary key,
-  verse_id_1 bigint not null references usq_verses(verse_id),
-  verse_id_2 bigint not null references usq_verses(verse_id),
-  alignment usq_alignment_type not null,
-  meta jsonb,
-  unique (verse_id_1, verse_id_2)
-);
-
-create table usq_verse_stops_alignment (
-  verse_stops_alignment_id bigserial primary key,
-  verse_id_1 bigint not null references usq_verses(verse_id),
-  verse_id_2 bigint not null references usq_verses(verse_id),
-  alignment usq_alignment_type not null,
-  meta jsonb,
-  unique (verse_id_1, verse_id_2)
-);
-
--- Resource References (one-way)
-
-create table usq_word_to_word_references (
-  word_word_ref_id bigserial primary key,
-  source_word bigint not null references usq_word_references(word_ref_id),
-  target_word bigint not null references usq_word_references(word_ref_id),
-  meta jsonb
-);
-
-create table usq_word_to_verse_references (
-  word_verse_ref_id bigserial primary key,
-  source_word bigint not null references usq_word_references(word_ref_id),
-  target_verse bigint not null references usq_verses(verse_id),
-  meta jsonb
-);
-
-create table usq_word_to_chapter_references (
-  word_chapter_ref_id bigserial primary key,
-  source_word bigint not null references usq_word_references(word_ref_id),
-  target_chapter bigint not null references usq_chapters(chapter_id),
-  meta jsonb
-);
-
-create table usq_verse_to_verse_references (
-  verse_verse_ref_id bigserial primary key,
-  source_verse bigint not null references usq_verses(verse_id),
-  target_verse bigint not null references usq_verses(verse_id),
-  meta jsonb
-);
-
-create table usq_verse_to_chapter_references (
-  verse_chapter_ref_id bigserial primary key,
-  source_verse bigint not null references usq_verses(verse_id),
-  target_chapter bigint not null references usq_chapters(chapter_id),
-  meta jsonb
-);
-
-create table usq_book_to_chapter_references (
-  book_chapter_ref_id bigserial primary key,
-  source_book bigint not null references usq_books(book_id),
-  target_chapter bigint not null references usq_chapters(chapter_id),
-  meta jsonb
-);
-
--- more types of reference tables can be created as needed
