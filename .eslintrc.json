@@ -1,0 +1,33 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "plugins": ["@typescript-eslint"],
+    "extends": [
+        "standard-with-typescript",
+        "next/core-web-vitals",
+        "plugin:@typescript-eslint/recommended",
+        "prettier" 
+    ],
+    "overrides": [
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "prettier/prettier": [
+        "warn",
+        {
+          "singleQuote": true,
+          "parser": "flow"
+        }
+    ],
+    "rules": {
+        // I suggest you add those two rules:
+        "prettier/prettier": [
+            "error", { "singleQuote": false, "endOfLine": "auto" }
+        ],
+        "prefer-const": "off" 
+    }
+}
