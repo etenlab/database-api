@@ -171,13 +171,28 @@ create table site_text_translations(
 );
 
 -- voting ---------------------------------------------------
-create table votes (
+create table ballots (
   id bigserial primary key,
+  app_id bigint not null, -- todo, references app
+  name varchar(128) not null,
+  created_by varchar(512), -- placeholder, not sure how to reference users yet
+  unique (app_id, name)
+);
+
+create table ballot_entries (
+  id bigserial primary key,
+  ballot_id bigint not null references ballots(id),
   table_name varchar(64) not null,
   row bigint not null,
+  created_by varchar(512) -- placeholder, not sure how to reference users yet
+);
+
+create table votes (
+  id bigserial primary key,
   user_id varchar(512),
+  ballot_entry_id bigint not null references ballot_entries(id),
   up bool not null, -- true = up vote, false = down vote, delete record to remove vote from user
-  unique (table_name, row, user_id)
+  unique (user_id, ballot_entry_id)
 );
 
 -- discussion ---------------------------------------------------
