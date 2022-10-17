@@ -50,12 +50,5 @@ import { ProgressBibleLanguageDetail } from './model';
   ]
 })
 export class AppModule { 
-  constructor(private readonly config: ConfigService){
-    console.log("db host")
-    console.log(config.get('DB_HOST'))
-    console.log(config.get('DB_PORT'))
-    console.log(config.get('DB_USERNAME'))
-    console.log(config.get('DB_PASSWORD'))
-    console.log(config.get('DB_NAME'))
-  }
+  constructor(private readonly config: ConfigService){}
 }

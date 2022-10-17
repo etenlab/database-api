@@ -34,4 +34,3 @@ DB_PORT=5432
 
 # test coverage
 `npm run test:cov`
-
