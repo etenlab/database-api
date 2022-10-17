@@ -75,7 +75,7 @@ jobs:
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: database-api-td.json
+          task-definition: task-definitions.json
           service: database-api-service
           cluster: fargate-cluster-1
           wait-for-service-stability: true
