@@ -10,10 +10,10 @@ import { Pool } from "pg"
 @Injectable()
 export class PostgresService {
   readonly pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'eil_db_1',
-    password: 'asdfasdf',
-    port: 5432,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: +process.env.DB_PORT!,
   })
 }
