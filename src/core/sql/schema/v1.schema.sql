@@ -127,6 +127,25 @@ create table admin.notifications (
 
 create index on admin.notifications (user_id, is_notified);
 
+-- Organizations, Roles, Authorization -----------------------------------------------
+
+create table admin.site_admins(
+  id bigserial primary key,
+  user varchar(64) not null unique
+)
+
+create table admin.organizations (
+  id bigserial primary key,
+  name varchar(128) not null unique
+);
+
+create table admin.roles (
+  id bigserial primary key,
+  organization bigint not null references admin.organizations(id),
+  name varchar(64) not null,
+  unique (organization, name)
+);
+
 -- language skill ---------------------------------------------------
 create type admin.language_skill_enum as enum (
   '1',
