@@ -219,9 +219,10 @@ create table admin.votes (
 -- discussion ---------------------------------------------------
 create table admin.discussions (
   id bigserial primary key,
+  app bigint not null references admin.app_list(id),
+  org bigint not null references admin.organizations(id),
   table_name varchar(64) not null,
-  row bigint not null,
-  unique (table_name, row)
+  row bigint not null
 );
 
 create table admin.posts (
