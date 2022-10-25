@@ -131,8 +131,8 @@ create index on admin.notifications (user_id, is_notified);
 
 create table admin.site_admins(
   id bigserial primary key,
-  user varchar(64) not null unique
-)
+  name varchar(64) not null unique
+);
 
 create table admin.organizations (
   id bigserial primary key,
