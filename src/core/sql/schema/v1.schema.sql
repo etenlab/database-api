@@ -250,6 +250,13 @@ create table admin.reactions (
   unique (user_id, content)
 );
 
+-- file ---------------------------------------------------
+create table admin.files (
+  id bigserial primary key,
+  filename varchar(256) not null,
+  url varchar(256) not null
+);
+
 -- DATASETS ---------------------------------------------------------
 
 create type iso_639_2_entry_type as enum (
