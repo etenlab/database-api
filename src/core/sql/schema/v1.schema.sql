@@ -257,6 +257,15 @@ create table admin.files (
   url varchar(256) not null
 );
 
+-- NOTIFICATIONS ----------------------------------------------------
+create table admin.notificaitons (
+  id bigserial primary key,
+  user_id varchar(512) not null, -- will change
+  table_name varchar(64) not null,
+  row bigint not null,
+  created_at timestamp default current_timestamp
+);
+
 -- DATASETS ---------------------------------------------------------
 
 create type iso_639_2_entry_type as enum (
