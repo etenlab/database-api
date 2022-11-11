@@ -263,6 +263,7 @@ create table admin.notificaitons (
   user_id varchar(512) not null, -- will change
   table_name varchar(64) not null,
   row bigint not null,
+  acknowledged bool not null default false,
   created_at timestamp default current_timestamp
 );
 
