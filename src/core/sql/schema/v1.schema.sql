@@ -243,6 +243,27 @@ create table admin.discussions (
   row bigint not null
 );
 
+create or replace function admin.fn_discussion_created() 
+	returns trigger as $discussion_created$
+	begin
+		perform pg_notify(
+    		'discussion_created',
+			json_build_object(
+			    'operation', TG_OP,
+			    'record', row_to_json(NEW)
+    		)::text);
+  		return NEW;
+	end;
+	$discussion_created$ language plpgsql;
+
+drop trigger if exists discussion_created
+  on admin.discussions;
+ 
+create trigger discussion_created
+  after insert 
+  on admin.discussions
+  for each row execute function admin.fn_discussion_created();
+
 create table admin.posts (
   id bigserial primary key,
   discussion bigint references admin.discussions(id),
@@ -261,12 +282,54 @@ create table admin.posts (
 
 create index posts_search_gin on admin.posts using gin (search_text);
 
+create or replace function admin.fn_post_changed() 
+	returns trigger as $post_changed$
+	begin
+		perform pg_notify(
+    		'post_changed',
+			json_build_object(
+			    'operation', TG_OP,
+			    'record', row_to_json(NEW)
+    		)::text);
+  		return NEW;
+	end;
+	$post_changed$ language plpgsql;
+
+drop trigger if exists post_changed
+  on admin.posts;
+ 
+create trigger post_changed
+  after insert or update or delete
+  on admin.posts
+  for each row execute function admin.fn_post_changed();
+
 create table admin.reactions (
   id bigserial primary key,
   user_id varchar(512) not null, -- will change, we use sso to track users
   content bigint not null, -- will change, not sure what format reactions need to take just yet
   unique (user_id, content)
 );
+
+create or replace function admin.fn_reaction_changed() 
+	returns trigger as $reaction_changed$
+	begin
+		perform pg_notify(
+    		'reaction_changed',
+			json_build_object(
+			    'operation', TG_OP,
+			    'record', row_to_json(NEW)
+    		)::text);
+  		return NEW;
+	end;
+	$reaction_changed$ language plpgsql;
+
+drop trigger if exists reaction_changed
+  on admin.reactions;
+ 
+create trigger reaction_changed
+  after insert or update or delete
+  on admin.reactions
+  for each row execute function admin.fn_reaction_changed();
 
 -- file ---------------------------------------------------
 create table admin.files (
