@@ -275,12 +275,20 @@ create index posts_search_gin on admin.posts using gin (search_text);
 
 create or replace function admin.fn_post_changed() 
 	returns trigger as $post_changed$
+  declare
+    row RECORD;
 	begin
-		perform pg_notify(
+    IF (TG_OP = 'DELETE') THEN
+      row = OLD;
+    ELSE 
+      row = NEW;
+    END IF;
+		
+    perform pg_notify(
     		'post_changed',
 			json_build_object(
 			    'operation', TG_OP,
-			    'record', row_to_json(NEW)
+			    'record', row_to_json(row)
     		)::text);
   		return NEW;
 	end;
@@ -305,12 +313,20 @@ create table admin.reactions (
 
 create or replace function admin.fn_reaction_changed() 
 	returns trigger as $reaction_changed$
+	declare
+    row RECORD;
 	begin
+    IF (TG_OP = 'DELETE') THEN
+      row = OLD;
+    ELSE 
+      row = NEW;
+    END IF;
+
 		perform pg_notify(
     		'reaction_changed',
 			json_build_object(
 			    'operation', TG_OP,
-			    'record', row_to_json(NEW)
+			    'record', row_to_json(row)
     		)::text);
   		return NEW;
 	end;
