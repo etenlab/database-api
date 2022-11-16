@@ -135,16 +135,6 @@ create table admin.emails_blocked (
   created_at timestamp not null default current_timestamp
 );
 
-create table admin.notifications (
-  notification_id bigserial primary key,
-  user_id bigint not null references admin.users(user_id),
-  is_notified bool not null default false,
-  text text,
-  created_at timestamp not null default current_timestamp
-);
-
-create index on admin.notifications (user_id, is_notified);
-
 -- Organizations, Roles, Authorization -----------------------------------------------
 
 create table admin.site_admins(
@@ -266,8 +256,9 @@ create trigger discussion_created
 
 create table admin.posts (
   id bigserial primary key,
-  discussion bigint references admin.discussions(id),
-  user_id varchar(512) not null, -- prolly will change, not sure how we will reference users yet
+  discussion_id bigint references admin.discussions(id),
+  user_id bigint not null references admin.users(user_id), 
+  -- prolly will change, not sure how we will reference users yet
   quill_text text,
   plain_text text,
   postgres_language regconfig not null default 'simple',
@@ -305,7 +296,9 @@ create trigger post_changed
 
 create table admin.reactions (
   id bigserial primary key,
-  user_id varchar(512) not null, -- will change, we use sso to track users
+  user_id bigint not null references admin.users(user_id), 
+  -- will change, we use sso to track users
+  post_id bigint references admin.posts(id),
   content bigint not null, -- will change, not sure what format reactions need to take just yet
   unique (user_id, content)
 );
@@ -339,12 +332,13 @@ create table admin.files (
 );
 
 -- NOTIFICATIONS ----------------------------------------------------
-create table admin.notificaitons (
+create table admin.notifications (
   id bigserial primary key,
-  user_id varchar(512) not null, -- will change
+  user_id bigint not null references admin.users(user_id),
   table_name varchar(64) not null,
   row bigint not null,
   acknowledged bool not null default false,
+  content text,
   created_at timestamp default current_timestamp
 );
 
