@@ -290,7 +290,7 @@ create or replace function admin.fn_post_changed()
 			    'operation', TG_OP,
 			    'record', row_to_json(row)
     		)::text);
-  		return NEW;
+  		return row;
 	end;
 	$post_changed$ language plpgsql;
 
@@ -328,7 +328,7 @@ create or replace function admin.fn_reaction_changed()
 			    'operation', TG_OP,
 			    'record', row_to_json(row)
     		)::text);
-  		return NEW;
+  		return row;
 	end;
 	$reaction_changed$ language plpgsql;
 
@@ -357,6 +357,27 @@ create table admin.notifications (
   content text,
   created_at timestamp default current_timestamp
 );
+
+create or replace function admin.fn_notification_created() 
+	returns trigger as $notification_created$
+	begin
+		perform pg_notify(
+    		'notification_created',
+			json_build_object(
+			    'operation', TG_OP,
+			    'record', row_to_json(NEW)
+    		)::text);
+  		return NEW;
+	end;
+	$notification_created$ language plpgsql;
+
+drop trigger if exists notification_created
+  on admin.notifications;
+ 
+create trigger notification_created
+  after insert
+  on admin.notifications
+  for each row execute function admin.fn_notification_created();
 
 -- DATASETS ---------------------------------------------------------
 
