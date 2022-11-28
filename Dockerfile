@@ -1,7 +1,7 @@
 FROM node:16
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /usr/src/etenlab/database-api
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -10,5 +10,5 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 
-EXPOSE 3001
+EXPOSE 8101
 CMD [ "npm", "run", "start:prod" ]
