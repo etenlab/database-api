@@ -196,6 +196,7 @@ create table admin.site_text_translations(
   language_id bigint not null,
   user_id varchar(512) not null, -- prolly will change, not sure how we will reference users yet
   site_text_translation varchar(512) not null,
+  description_translation varchar(512) not null,
   unique (site_text, site_text_translation)
 );
 
