@@ -39,7 +39,7 @@ export class DatabaseVersionControlService {
   async getSchemaVersion(): Promise<number> {
     const res = await this.pg.pool.query(`
       select version 
-      from database_version_control 
+      from admin.database_version_control 
       order by version 
       desc limit 1;
     `, [])
@@ -63,7 +63,7 @@ export class DatabaseVersionControlService {
 
   async setVersionNumber(version: number) {
     const res = await this.pg.pool.query(`
-      insert into database_version_control(version) values($1);
+      insert into admin.database_version_control(version) values($1);
     `, [version])
   }
 
