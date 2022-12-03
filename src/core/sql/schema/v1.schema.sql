@@ -383,8 +383,7 @@ create trigger notification_created
 -- GRAPH ------------------------------------------------------------
 
 create table node_types (
-  node_type_id bigserial primary key,
-  type_name varchar(32) not null unique
+  type_name varchar(32) primary key
 );
 
 create table nodes (
@@ -405,8 +404,7 @@ create table node_property_values (
 );
 
 create table relationship_types (
-  relationship_type_id bigserial primary key,
-  type_name varchar(32) not null unique
+  type_name varchar(32) primary key
 );
 
 create table relationships (
