@@ -247,16 +247,25 @@ create table relationship_property_values (
 );
 
 insert into node_types (type_name) values
-  ('bible'),
-  ('book'),
-  ('chapter'),
-  ('verse'),
   ('word'),
-  ('definition');
+  ('word-sequence')
+  ('verse'),
+  ('chapter'),
+  ('book'),
+  ('bible'),
+
+  ('definition'),
+  ('article'),
+  ('lexical-entry');
 
 insert into relationship_types (type_name) values
-  ('verse-to-word'),
-  ('word-to-chapter');
+  ('word-sequence-to-word'),
+  ('verse-to-word-sequence'),
+  ('chapter-to-verse'),
+  ('book-to-chapter'),
+  ('bible-to-book'),
+  
+  ('word-to-article');
 
 -- voting ---------------------------------------------------
 create table votables(
