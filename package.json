@@ -33,6 +33,7 @@
     "@types/argon2": "^0.15.0",
     "apollo-server-express": "^3.10.2",
     "argon2": "^0.29.1",
+    "dotenv": "^16.0.3",
     "graphql": "^16.6.0",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.3",

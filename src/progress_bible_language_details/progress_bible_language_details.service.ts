@@ -20,7 +20,6 @@ export class ProgressBibleLanguageDetailsService {
     })
   }
 
-
   public async insert(data: any){
     return await this.repo.insert({
         unit_code: data.unit_code,
@@ -46,6 +45,5 @@ export class ProgressBibleLanguageDetailsService {
         show_sign_language: data.show_sign_language
     })
   }
-
 
 }

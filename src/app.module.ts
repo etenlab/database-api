@@ -14,7 +14,6 @@ import { ProgressBibleLanguageDetailsService } from './progress_bible_language_d
 import { ProgressBibleLanguageDetailModule } from './progress_bible_language_details/progress_bible_language_details.module';
 import { ProgressBibleLanguageDetail } from './model';
 
-
 @Module({
   imports: [
     ProgressBibleLanguageDetailModule,
@@ -46,9 +45,12 @@ import { ProgressBibleLanguageDetail } from './model';
   providers: [AppService, CronService],
   // entities: [ProgressBibleLanguageDetail],
   exports: [
-
+    
   ]
 })
 export class AppModule { 
-  constructor(private readonly config: ConfigService){}
+  constructor(private readonly config: ConfigService){
+    console.log(process.env.DB_USERNAME)
+    console.log(process.env.DB_USERNAME)
+  }
 }
