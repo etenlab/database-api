@@ -354,6 +354,13 @@ create table admin.files (
   url varchar(256) not null
 );
 
+-- relationship_post_file ---------------------------------
+create table admin.relationship_post_file (
+  id bigserial primary key,
+  post_id bigint not null references admin.posts(id),
+  file_id bigint not null references admin.files(id)
+);
+
 -- NOTIFICATIONS ----------------------------------------------------
 create table admin.notifications (
   id bigserial primary key,
