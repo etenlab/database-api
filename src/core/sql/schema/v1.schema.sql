@@ -15,7 +15,7 @@ $$ language 'plpgsql' STRICT;
 
 -- VERSION CONTROL ---------------------------------------------------
 
-CREATE TABLE admin.typeorm_metadata (
+CREATE TABLE typeorm_metadata (
   "type" varchar(255) NOT NULL,
   "database" varchar(255) DEFAULT NULL,
   "schema" varchar(255) DEFAULT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE admin.typeorm_metadata (
 );
 
 -- reference table
-create table admin.database_version_control (
+create table database_version_control (
   id bigserial primary key,
   version bigint not null,
   completed timestamp default current_timestamp
