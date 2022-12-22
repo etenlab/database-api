@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { readFileSync } from "fs"
-import { justBearerHeader } from "src/common/utility"
+import { justBearerHeader } from "../common/utility"
 import { PostgresService } from "./postgres.service"
 
 @Injectable()
