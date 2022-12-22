@@ -57,6 +57,13 @@ export class DatabaseVersionControlService {
     // schema
     await this.runSqlFile('./src/core/sql/schema/v1.schema.sql')
 
+    // load iso_639_3
+    await this.runSqlFile('./src/core/sql/scripts/iso_639_3.sql');
+    
+
+    // load dummy data for translation app 
+    await this.runSqlFile('./src/core/sql/scripts/translation.sql');
+
     // update db version
     await this.setVersionNumber(1)
   }
