@@ -408,8 +408,10 @@ create trigger reaction_changed
 -- file ---------------------------------------------------
 create table admin.files (
   id bigserial primary key,
-  filename varchar(256) not null,
-  url varchar(256) not null
+  file_name varchar(256) not null,
+  file_size bigint not null,
+  file_type varchar(256),
+  file_url varchar(256) not null
 );
 
 -- relationship_post_file ---------------------------------
