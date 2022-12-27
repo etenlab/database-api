@@ -421,6 +421,35 @@ create table admin.relationship_post_file (
   file_id bigint not null references admin.files(id)
 );
 
+create or replace function admin.fn_relationship_post_file_deleted() 
+	returns trigger as $relationship_post_file_deleted$
+	declare
+    row RECORD;
+	begin
+    IF (TG_OP = 'DELETE') THEN
+      row = OLD;
+    ELSE 
+      row = NEW;
+    END IF;
+
+		perform pg_notify(
+    		'relationship_post_file_deleted',
+			json_build_object(
+			    'operation', TG_OP,
+			    'record', row_to_json(row)
+    		)::text);
+  		return row;
+	end;
+	$relationship_post_file_deleted$ language plpgsql;
+
+drop trigger if exists relationship_post_file_deleted
+  on admin.relationship_post_file;
+ 
+create trigger relationship_post_file_deleted
+  after delete
+  on admin.relationship_post_file
+  for each row execute function admin.fn_relationship_post_file_deleted();
+
 -- NOTIFICATIONS ----------------------------------------------------
 create table admin.notifications (
   id bigserial primary key,
