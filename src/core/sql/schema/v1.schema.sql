@@ -37,6 +37,7 @@ create table admin.users (
   user_id bigserial primary key,
   active bool not null default true,
   email varchar(255) unique not null,
+  username varchar(255) unique not null,
   is_email_verified bool not null default false,
   password varchar(128) not null,
   created_at timestamp not null default current_timestamp
@@ -371,9 +372,9 @@ create table admin.reactions (
   id bigserial primary key,
   user_id bigint not null references admin.users(user_id), 
   -- will change, we use sso to track users
-  post_id bigint references admin.posts(id),
-  content bigint not null, -- will change, not sure what format reactions need to take just yet
-  unique (user_id, content)
+  post_id bigint not null references admin.posts(id),
+  content varchar(64) not null,
+  unique (user_id, content, post_id)
 );
 
 create or replace function admin.fn_reaction_changed() 
