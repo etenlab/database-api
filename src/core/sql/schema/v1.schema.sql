@@ -334,6 +334,8 @@ create table admin.posts (
   			plain_text
   		)
   ) stored,
+  is_edited bool not null default false,
+  reply_id bigint references admin.posts(id),
   created_at timestamp default current_timestamp
 );
 
