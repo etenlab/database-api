@@ -15,15 +15,6 @@ $$ language 'plpgsql' STRICT;
 
 -- VERSION CONTROL ---------------------------------------------------
 
-CREATE TABLE admin.typeorm_metadata (
-  "type" varchar(255) NOT NULL,
-  "database" varchar(255) DEFAULT NULL,
-  "schema" varchar(255) DEFAULT NULL,
-  "table" varchar(255) DEFAULT NULL,
-  "name" varchar(255) DEFAULT NULL,
-  "value" text
-);
-
 CREATE TABLE typeorm_metadata (
   "type" varchar(255) NOT NULL,
   "database" varchar(255) DEFAULT NULL,
@@ -34,7 +25,7 @@ CREATE TABLE typeorm_metadata (
 );
 
 -- reference table
-create table admin.database_version_control (
+create table database_version_control (
   id bigserial primary key,
   version bigint not null,
   completed timestamp default current_timestamp
@@ -46,6 +37,7 @@ create table admin.users (
   user_id bigserial primary key,
   active bool not null default true,
   email varchar(255) unique not null,
+  username varchar(255) unique not null,
   is_email_verified bool not null default false,
   password varchar(128) not null,
   created_at timestamp not null default current_timestamp
@@ -200,6 +192,73 @@ create table admin.site_text_translations(
   unique (site_text, site_text_translation)
 );
 
+-- GRAPH ------------------------------------------------------------
+
+create table node_types (
+  type_name varchar(32) primary key
+);
+
+create table nodes (
+  node_id bigserial primary key,
+  node_type varchar(32) references node_types(type_name)
+);
+
+create table node_property_keys (
+  node_property_key_id bigserial primary key,
+  node_id bigint references nodes(node_id) not null,
+  property_key varchar(64)
+);
+
+create table node_property_values (
+  node_property_value_id bigserial primary key,
+  node_property_key_id bigint references node_property_keys(node_property_key_id) not null,
+  property_value jsonb
+);
+
+create table relationship_types (
+  type_name varchar(32) primary key
+);
+
+create table relationships (
+  relationship_id bigserial primary key,
+  relationship_type varchar(32) references relationship_types(type_name),
+  from_node_id bigint references nodes(node_id),
+  to_node_id bigint references nodes(node_id)
+);
+
+create table relationship_property_keys (
+  relationship_property_key_id bigserial primary key,
+  relationship_id bigint references relationships(relationship_id) not null,
+  property_key varchar(64)
+);
+
+create table relationship_property_values (
+  relationship_property_value_id bigserial primary key,
+  relationship_property_key_id bigint references relationship_property_keys(relationship_property_key_id) not null,
+  property_value jsonb
+);
+
+insert into node_types (type_name) values
+  ('word'),
+  ('word-sequence'),
+  ('verse'),
+  ('chapter'),
+  ('book'),
+  ('bible'),
+
+  ('definition'),
+  ('article'),
+  ('lexical-entry');
+
+insert into relationship_types (type_name) values
+  ('word-sequence-to-word'),
+  ('verse-to-word-sequence'),
+  ('chapter-to-verse'),
+  ('book-to-chapter'),
+  ('bible-to-book'),
+  
+  ('word-to-article');
+
 -- voting ---------------------------------------------------
 create table admin.votables(
   table_name varchar(64) not null unique
@@ -275,6 +334,8 @@ create table admin.posts (
   			plain_text
   		)
   ) stored,
+  is_edited bool not null default false,
+  reply_id bigint references admin.posts(id),
   created_at timestamp default current_timestamp
 );
 
@@ -313,9 +374,9 @@ create table admin.reactions (
   id bigserial primary key,
   user_id bigint not null references admin.users(user_id), 
   -- will change, we use sso to track users
-  post_id bigint references admin.posts(id),
-  content bigint not null, -- will change, not sure what format reactions need to take just yet
-  unique (user_id, content)
+  post_id bigint not null references admin.posts(id),
+  content varchar(64) not null,
+  unique (user_id, content, post_id)
 );
 
 create or replace function admin.fn_reaction_changed() 
@@ -350,9 +411,47 @@ create trigger reaction_changed
 -- file ---------------------------------------------------
 create table admin.files (
   id bigserial primary key,
-  filename varchar(256) not null,
-  url varchar(256) not null
+  file_name varchar(256) not null,
+  file_size bigint not null,
+  file_type varchar(256),
+  file_url varchar(256) not null
 );
+
+-- relationship_post_file ---------------------------------
+create table admin.relationship_post_file (
+  id bigserial primary key,
+  post_id bigint not null references admin.posts(id),
+  file_id bigint not null references admin.files(id)
+);
+
+create or replace function admin.fn_relationship_post_file_deleted() 
+	returns trigger as $relationship_post_file_deleted$
+	declare
+    row RECORD;
+	begin
+    IF (TG_OP = 'DELETE') THEN
+      row = OLD;
+    ELSE 
+      row = NEW;
+    END IF;
+
+		perform pg_notify(
+    		'relationship_post_file_deleted',
+			json_build_object(
+			    'operation', TG_OP,
+			    'record', row_to_json(row)
+    		)::text);
+  		return row;
+	end;
+	$relationship_post_file_deleted$ language plpgsql;
+
+drop trigger if exists relationship_post_file_deleted
+  on admin.relationship_post_file;
+ 
+create trigger relationship_post_file_deleted
+  after delete
+  on admin.relationship_post_file
+  for each row execute function admin.fn_relationship_post_file_deleted();
 
 -- NOTIFICATIONS ----------------------------------------------------
 create table admin.notifications (
@@ -385,64 +484,6 @@ create trigger notification_created
   after insert
   on admin.notifications
   for each row execute function admin.fn_notification_created();
-
--- GRAPH ------------------------------------------------------------
-
-create table node_types (
-  type_name varchar(32) primary key
-);
-
-create table nodes (
-  node_id bigserial primary key,
-  node_type varchar(32) references node_types(type_name)
-);
-
-create table node_property_keys (
-  node_property_key_id bigserial primary key,
-  node_id bigint references nodes(node_id) not null,
-  property_key varchar(64)
-);
-
-create table node_property_values (
-  node_property_value_id bigserial primary key,
-  node_property_key_id bigint references node_property_keys(node_property_key_id) not null,
-  property_value jsonb
-);
-
-create table relationship_types (
-  type_name varchar(32) primary key
-);
-
-create table relationships (
-  relationship_id bigserial primary key,
-  relationship_type varchar(32) references relationship_types(type_name),
-  from_node_id bigint references nodes(node_id),
-  to_node_id bigint references nodes(node_id)
-);
-
-create table relationship_property_keys (
-  relationship_property_key_id bigserial primary key,
-  relationship_id bigint references relationships(relationship_id) not null,
-  property_key varchar(64)
-);
-
-create table relationship_property_values (
-  relationship_property_value_id bigserial primary key,
-  relationship_property_key_id bigint references relationship_property_keys(relationship_property_key_id) not null,
-  property_value jsonb
-);
-
-insert into node_types (type_name) values
-  ('bible'),
-  ('book'),
-  ('chapter'),
-  ('verse'),
-  ('word'),
-  ('definition');
-
-insert into relationship_types (type_name) values
-  ('verse-to-word'),
-  ('word-to-chapter');
 
 -- DATASETS ---------------------------------------------------------
 

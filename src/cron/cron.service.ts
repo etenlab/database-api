@@ -2,8 +2,8 @@ import { Injectable, Logger, Module } from '@nestjs/common'
 import { Cron } from '@nestjs/schedule'
 import { HttpService } from '@nestjs/axios';
 import { ProgressBibleLanguageDetailsService } from '../progress_bible_language_details/progress_bible_language_details.service';
-import { ProgressBibleLanguageDetailModule } from 'src/progress_bible_language_details/progress_bible_language_details.module';
-import { ProgressBibleLanguageDetail } from 'src/model';
+import { ProgressBibleLanguageDetailModule } from '../progress_bible_language_details/progress_bible_language_details.module';
+import { ProgressBibleLanguageDetail } from '../model';
 
 @Module({
   imports: [ProgressBibleLanguageDetailModule],
