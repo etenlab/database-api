@@ -196,22 +196,29 @@ create table admin.site_text_translations(
   language_id bigint not null,
   user_id varchar(512) not null, -- prolly will change, not sure how we will reference users yet
   site_text_translation varchar(512) not null,
+  description_translation varchar(512) not null,
   unique (site_text, site_text_translation)
 );
 
 -- voting ---------------------------------------------------
-create table admin.ballots (
+create table admin.votables(
+  table_name varchar(64) not null unique
+);
+
+create table admin.elections (
   id bigserial primary key,
   app_id bigint not null, -- todo, references app
   name varchar(128) not null,
+  table_name varchar(64) not null references admin.votables(table_name),
+  row bigint not null,
   created_by varchar(512), -- placeholder, not sure how to reference users yet
   unique (app_id, name)
 );
 
 create table admin.ballot_entries (
   id bigserial primary key,
-  ballot_id bigint not null references admin.ballots(id),
-  table_name varchar(64) not null,
+  election_id bigint not null references admin.elections(id),
+  table_name varchar(64) not null references admin.votables(table_name),
   row bigint not null,
   created_by varchar(512) -- placeholder, not sure how to reference users yet
 );
@@ -290,7 +297,7 @@ create or replace function admin.fn_post_changed()
 			    'operation', TG_OP,
 			    'record', row_to_json(row)
     		)::text);
-  		return NEW;
+  		return row;
 	end;
 	$post_changed$ language plpgsql;
 
@@ -328,7 +335,7 @@ create or replace function admin.fn_reaction_changed()
 			    'operation', TG_OP,
 			    'record', row_to_json(row)
     		)::text);
-  		return NEW;
+  		return row;
 	end;
 	$reaction_changed$ language plpgsql;
 
@@ -357,6 +364,85 @@ create table admin.notifications (
   content text,
   created_at timestamp default current_timestamp
 );
+
+create or replace function admin.fn_notification_created() 
+	returns trigger as $notification_created$
+	begin
+		perform pg_notify(
+    		'notification_created',
+			json_build_object(
+			    'operation', TG_OP,
+			    'record', row_to_json(NEW)
+    		)::text);
+  		return NEW;
+	end;
+	$notification_created$ language plpgsql;
+
+drop trigger if exists notification_created
+  on admin.notifications;
+ 
+create trigger notification_created
+  after insert
+  on admin.notifications
+  for each row execute function admin.fn_notification_created();
+
+-- GRAPH ------------------------------------------------------------
+
+create table node_types (
+  type_name varchar(32) primary key
+);
+
+create table nodes (
+  node_id bigserial primary key,
+  node_type varchar(32) references node_types(type_name)
+);
+
+create table node_property_keys (
+  node_property_key_id bigserial primary key,
+  node_id bigint references nodes(node_id) not null,
+  property_key varchar(64)
+);
+
+create table node_property_values (
+  node_property_value_id bigserial primary key,
+  node_property_key_id bigint references node_property_keys(node_property_key_id) not null,
+  property_value jsonb
+);
+
+create table relationship_types (
+  type_name varchar(32) primary key
+);
+
+create table relationships (
+  relationship_id bigserial primary key,
+  relationship_type varchar(32) references relationship_types(type_name),
+  from_node_id bigint references nodes(node_id),
+  to_node_id bigint references nodes(node_id)
+);
+
+create table relationship_property_keys (
+  relationship_property_key_id bigserial primary key,
+  relationship_id bigint references relationships(relationship_id) not null,
+  property_key varchar(64)
+);
+
+create table relationship_property_values (
+  relationship_property_value_id bigserial primary key,
+  relationship_property_key_id bigint references relationship_property_keys(relationship_property_key_id) not null,
+  property_value jsonb
+);
+
+insert into node_types (type_name) values
+  ('bible'),
+  ('book'),
+  ('chapter'),
+  ('verse'),
+  ('word'),
+  ('definition');
+
+insert into relationship_types (type_name) values
+  ('verse-to-word'),
+  ('word-to-chapter');
 
 -- DATASETS ---------------------------------------------------------
 

@@ -12,7 +12,6 @@ Set `env` vars:
 ```
 DB_USER=postgres
 DB_HOST=localhost
-DB_DATABASE=eil_db_1
 DB_NAME=eil_db_1
 DB_PASSWORD=asdfasdf
 DB_PORT=5432
