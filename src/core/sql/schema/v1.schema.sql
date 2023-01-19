@@ -209,11 +209,15 @@ create table node_property_keys (
   property_key varchar(64)
 );
 
+create index idx_node_property_keys_node_id_key on node_property_keys (node_id);
+
 create table node_property_values (
   node_property_value_id bigserial primary key,
   node_property_key_id bigint references node_property_keys(node_property_key_id) not null,
   property_value jsonb
 );
+
+create index idx_node_property_values_key_id on node_property_values (node_property_key_id);
 
 create table relationship_types (
   type_name varchar(32) primary key
@@ -226,17 +230,24 @@ create table relationships (
   to_node_id bigint references nodes(node_id)
 );
 
+create index idx_relationships_from_node_id on relationships (from_node_id);
+create index idx_relationships_to_node_id on relationships (to_node_id);
+
 create table relationship_property_keys (
   relationship_property_key_id bigserial primary key,
   relationship_id bigint references relationships(relationship_id) not null,
   property_key varchar(64)
 );
 
+create index idx_relationship_property_keys_relationship_id on relationship_property_keys (relationship_id);
+
 create table relationship_property_values (
   relationship_property_value_id bigserial primary key,
   relationship_property_key_id bigint references relationship_property_keys(relationship_property_key_id) not null,
   property_value jsonb
 );
+
+create index idx_relationship_property_values_key_id on relationship_property_values (relationship_property_key_id);
 
 insert into node_types (type_name) values
   ('word'),
