@@ -251,24 +251,44 @@ create index idx_relationship_property_values_key_id on relationship_property_va
 
 insert into node_types (type_name) values
   ('word'),
+  ('addition'),
   ('word-sequence'),
+  ('sentence'),
   ('verse'),
+  ('paragraph'),
   ('chapter'),
+  ('section'),
   ('book'),
   ('bible'),
 
   ('definition'),
   ('article'),
-  ('lexical-entry');
+  ('lexical-entry'),
+  ('strongs-entry');
 
 insert into relationship_types (type_name) values
   ('word-sequence-to-word'),
   ('verse-to-word-sequence'),
+  ('sentence-to-word-sequence'),
   ('chapter-to-verse'),
   ('book-to-chapter'),
+  ('chapter-to-section'),
+  ('chapter-to-paragraph'),
   ('bible-to-book'),
   
-  ('word-to-article');
+  ('word-to-article'),
+
+  ('word-to-strongs-entry'),
+  ('word-to-addition'),
+  ('section-to-paragraph'),
+  ('section-to-section'),
+  ('article-to-section'),
+  ('article-to-paragraph'),
+  ('article-to-sentence'),
+  ('paragraph-to-sentence'),
+  ('paragraph-to-verse'),
+  ('verse-to-sentence'),
+  ('sentence-to-word');
 
 -- voting ---------------------------------------------------
 create table admin.votables(
