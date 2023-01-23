@@ -10,8 +10,12 @@ import { ProgressBibleLanguageDetailsController } from './progress_bible_languag
   imports: [TypeOrmModule.forFeature([ProgressBibleLanguageDetail])],
   providers: [ProgressBibleLanguageDetailsService],
   controllers: [ProgressBibleLanguageDetailsController],
-  exports: [ProgressBibleLanguageDetailsService]
+  exports: [ProgressBibleLanguageDetailsService],
 })
 export class ProgressBibleLanguageDetailModule {
-    constructor(private readonly pbLangDetailService: ProgressBibleLanguageDetailsService) { /* initialize logger, or whatever */ }
+  constructor(
+    private readonly pbLangDetailService: ProgressBibleLanguageDetailsService,
+  ) {
+    /* initialize logger, or whatever */
+  }
 }
