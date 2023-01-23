@@ -13,7 +13,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import { ProgressBibleLanguageDetailsService } from './progress_bible_language_details/progress_bible_language_details.service';
 import { ProgressBibleLanguageDetailModule } from './progress_bible_language_details/progress_bible_language_details.module';
 import { ProgressBibleLanguageDetail } from './model';
-
+import { entities } from './model/index';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { ProgressBibleLanguageDetail } from './model';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [ ProgressBibleLanguageDetail ],
+        entities: [...entities],
         synchronize: false,
       }),
       inject: [ConfigService],
