@@ -1,9 +1,9 @@
 import { Injectable, Logger, Module } from '@nestjs/common'
-import { Cron } from '@nestjs/schedule'
+// import { Cron } from '@nestjs/schedule'
 import { HttpService } from '@nestjs/axios';
 import { ProgressBibleLanguageDetailsService } from '../progress_bible_language_details/progress_bible_language_details.service';
 import { ProgressBibleLanguageDetailModule } from '../progress_bible_language_details/progress_bible_language_details.module';
-import { ProgressBibleLanguageDetail } from '../model';
+// import { ProgressBibleLanguageDetail } from '../model';
 
 @Module({
   imports: [ProgressBibleLanguageDetailModule],
@@ -11,14 +11,15 @@ import { ProgressBibleLanguageDetail } from '../model';
 
 @Injectable()
 export class CronService {
-  private readonly logger = new Logger(CronService.name);
+  // private readonly logger = new Logger(CronService.name);
   // 
-  constructor(private readonly httpService: HttpService, private pbLangDetailService: ProgressBibleLanguageDetailsService) {}
+  // constructor(private readonly httpService: HttpService, private pbLangDetailService: ProgressBibleLanguageDetailsService) {}
 
 
-  @Cron('0 1 * * * *')
+  // @Cron('0 1 * * * *')
   async handleCron() {
     // this.logger.debug('Called when the current second is 45');
+    /*
     const { createHmac } = await import('node:crypto');
     const util = require('util')
 
@@ -68,6 +69,7 @@ export class CronService {
       }
       // console.log(value.data.resource )
     })
+    */
     
     // var data = await this.pbLangDetailService.getAll()
     // if(data.length){
