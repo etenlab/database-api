@@ -1071,3 +1071,11 @@ create table glottolog_family(
     child_languages int,
     top_level_family int
 );
+
+create table admin.user_roles(
+    id bigserial primary key,
+    user_id bigint not null references admin.users(user_id),
+    app bigint not null references admin.app_list(id),
+    org bigint not null references admin.organizations(id),
+    role bigint not null references admin.roles(id)
+);
