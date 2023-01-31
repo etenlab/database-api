@@ -1,13 +1,13 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity("progress_bible_language_details")
+@Entity('progress_bible_language_details')
 export class ProgressBibleLanguageDetail {
   @PrimaryGeneratedColumn({
     type: 'bigint',
     name: 'id',
   })
   id: number;
-  
+
   @Column({
     nullable: false,
     default: '',
@@ -133,5 +133,4 @@ export class ProgressBibleLanguageDetail {
     default: '',
   })
   show_sign_language: boolean;
-
 }

@@ -1,5 +1,5 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { Module } from "@nestjs/common";
+import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { join } from 'path';
@@ -9,7 +9,7 @@ import { CoreModule } from './core/core.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronService } from './cron/cron.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import {TypeOrmModule} from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProgressBibleLanguageDetailsService } from './progress_bible_language_details/progress_bible_language_details.service';
 import { ProgressBibleLanguageDetailModule } from './progress_bible_language_details/progress_bible_language_details.module';
 import { ProgressBibleLanguageDetail } from './model';
@@ -27,7 +27,7 @@ import { ProgressBibleLanguageDetail } from './model';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [ ProgressBibleLanguageDetail ],
+        entities: [ProgressBibleLanguageDetail],
         synchronize: false,
       }),
       inject: [ConfigService],
@@ -35,22 +35,20 @@ import { ProgressBibleLanguageDetail } from './model';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true
+      sortSchema: true,
     }),
     CoreModule,
     HttpModule,
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService, CronService],
   // entities: [ProgressBibleLanguageDetail],
-  exports: [
-    
-  ]
+  exports: [],
 })
-export class AppModule { 
-  constructor(private readonly config: ConfigService){
-    console.log(process.env.DB_USERNAME)
-    console.log(process.env.DB_USERNAME)
+export class AppModule {
+  constructor(private readonly config: ConfigService) {
+    console.log(process.env.DB_USERNAME);
+    console.log(process.env.DB_USERNAME);
   }
 }
