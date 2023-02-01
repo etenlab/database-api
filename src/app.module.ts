@@ -13,6 +13,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProgressBibleLanguageDetailsService } from './progress_bible_language_details/progress_bible_language_details.service';
 import { ProgressBibleLanguageDetailModule } from './progress_bible_language_details/progress_bible_language_details.module';
 import { ProgressBibleLanguageDetail } from './model';
+import { UserController } from './user/user.controller';
+import { UserService } from './user/user.service';
+import { KeycloakService } from './keycloak/keycloak.service';
+import entities from './model/entities';
 
 @Module({
   imports: [
@@ -27,11 +31,13 @@ import { ProgressBibleLanguageDetail } from './model';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [ProgressBibleLanguageDetail],
+        schema: configService.get('DB_SCHEMA') || 'public',
+        entities,
         synchronize: false,
       }),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature(entities),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -41,8 +47,8 @@ import { ProgressBibleLanguageDetail } from './model';
     HttpModule,
     ScheduleModule.forRoot(),
   ],
-  controllers: [AppController],
-  providers: [AppService, CronService],
+  controllers: [AppController, UserController],
+  providers: [AppService, CronService, UserService, KeycloakService],
   // entities: [ProgressBibleLanguageDetail],
   exports: [],
 })
