@@ -10,7 +10,7 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY src ./
 
-RUN npm install -g npm@latest
+RUN grep -e react-dom package-lock.json
 RUN npm ci --registry=https://registry.npmjs.org
 RUN npm run build
 
