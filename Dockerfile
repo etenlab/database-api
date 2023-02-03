@@ -10,8 +10,7 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY src ./
 
-RUN grep -e react-dom package-lock.json
-RUN npm ci --registry=https://registry.npmjs.org
+RUN npm ci
 RUN npm run build
 
 CMD [ "npm", "run", "start:prod" ]
