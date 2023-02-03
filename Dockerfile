@@ -10,7 +10,8 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY src ./
 
-RUN npm ci
+RUN npm install -g npm@latest
+RUN npm ci --registry=https://registry.npmjs.org
 RUN npm run build
 
 CMD [ "npm", "run", "start:prod" ]
