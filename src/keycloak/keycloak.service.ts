@@ -16,7 +16,7 @@ export class KeycloakService {
 
     if (!this.keycloakUrl || !this.keycloakClientId) {
       throw new Error(
-        'Keycloak configuration is missing. Provide KEYCLOAK_URL, KEYCLOAK_REALM and KEYCLOAK_CLIENT_ID environment variables. ',
+        'Keycloak configuration is missing. Provide KEYCLOAK_URL, KEYCLOAK_CLIENT_ID environment variables. ',
       );
     }
   }
