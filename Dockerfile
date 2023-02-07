@@ -8,7 +8,7 @@ WORKDIR /usr/src/etenlab/database-api
 # where available (npm@5+)
 COPY package*.json ./
 COPY tsconfig*.json ./
-COPY src ./
+COPY . .
 
 RUN npm ci
 RUN npm run build
