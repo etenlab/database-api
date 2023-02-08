@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { AppService } from './app.service';
 
 const pkg = readFileSync(resolve(process.cwd(), 'package.json'));
-const { verions, name } = JSON.parse(pkg.toString()).version;
+const { version, name } = JSON.parse(pkg.toString());
 
 @Controller()
 export class AppController {
@@ -17,6 +17,7 @@ export class AppController {
 
   @Get('info')
   getVersion() {
-    return { verions, name };
+    console.log({ version, name });
+    return { version, name };
   }
 }
