@@ -15,7 +15,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('version')
+  @Get('info')
   getVersion() {
     return { verions, name };
   }
