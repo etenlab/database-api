@@ -33,6 +33,7 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.devcontainer
 
 .yarn
 .DS_Store

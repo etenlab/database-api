@@ -3,7 +3,7 @@ import { ProgressBibleLanguageDetailsService } from './progress_bible_language_d
 
 @Controller('ProgressBibleLanguageDetails')
 export class ProgressBibleLanguageDetailsController {
-  constructor(private serv: ProgressBibleLanguageDetailsService) { }
+  constructor(private serv: ProgressBibleLanguageDetailsService) {}
 
   @Get()
   public async getAll() {

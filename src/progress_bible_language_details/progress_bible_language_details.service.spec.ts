@@ -9,7 +9,9 @@ describe('ProgressBibleLanguageDetailsService', () => {
       providers: [ProgressBibleLanguageDetailsService],
     }).compile();
 
-    service = module.get<ProgressBibleLanguageDetailsService>(ProgressBibleLanguageDetailsService);
+    service = module.get<ProgressBibleLanguageDetailsService>(
+      ProgressBibleLanguageDetailsService,
+    );
   });
 
   it('should be defined', () => {

@@ -1,4 +1,4 @@
-import { Injectable, Logger, Module } from '@nestjs/common'
+import { Injectable, Logger, Module } from '@nestjs/common';
 // import { Cron } from '@nestjs/schedule'
 import { HttpService } from '@nestjs/axios';
 import { ProgressBibleLanguageDetailsService } from '../progress_bible_language_details/progress_bible_language_details.service';
@@ -8,13 +8,11 @@ import { ProgressBibleLanguageDetailModule } from '../progress_bible_language_de
 @Module({
   imports: [ProgressBibleLanguageDetailModule],
 })
-
 @Injectable()
 export class CronService {
   // private readonly logger = new Logger(CronService.name);
-  // 
+  //
   // constructor(private readonly httpService: HttpService, private pbLangDetailService: ProgressBibleLanguageDetailsService) {}
-
 
   // @Cron('0 1 * * * *')
   async handleCron() {
@@ -70,7 +68,6 @@ export class CronService {
       // console.log(value.data.resource )
     })
     */
-    
     // var data = await this.pbLangDetailService.getAll()
     // if(data.length){
     //   data.forEach((value:ProgressBibleLanguageDetail, index: number) => {

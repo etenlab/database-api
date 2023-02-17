@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common"
-import { Pool } from "pg"
+import { Injectable } from '@nestjs/common';
+import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -16,5 +16,5 @@ export class PostgresService {
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: +process.env.DB_PORT!,
-  })
+  });
 }
