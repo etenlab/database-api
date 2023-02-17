@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Body, Injectable, HttpException } from '@nestjs/common';
+import { Body, Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { map } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -7,8 +7,7 @@ import { catchError } from 'rxjs/operators';
 export interface RegisterRequest {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  username: string;
 }
 
 @Injectable()
@@ -32,8 +31,9 @@ export class KeycloakService {
       !this.keycloakClientId ||
       !this.keycloakClientSecret
     ) {
-      throw new Error(
-        'Keycloak configuration is missing. Provide KEYCLOAK_URL, KEYCLOAK_CLIENT_ID environment variables. ',
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -54,20 +54,17 @@ export class KeycloakService {
   public async getToken(realm: string): Promise<any> {
     const url = `${this.keycloakUrl}/realms/${realm}/protocol/openid-connect/token`;
 
-    const params = {
-      grant_type: 'client_credentials',
-      client_id: this.keycloakClientId,
-      client_secret: this.keycloakClientSecret,
-    };
+    const body = new URLSearchParams();
+    body.set('grant_type', 'client_credentials');
+    body.set('client_id', this.keycloakClientId);
+    body.set('client_secret', this.keycloakClientSecret);
 
-    const config = {
-      headers: {
-        'Content-Type': `application/x-www-form-urlencoded`,
-      },
+    const headers = {
+      'Content-Type': `application/x-www-form-urlencoded`,
     };
 
     return await this.httpService
-      .post<any>(url, params, config)
+      .post<any>(url, body.toString(), { headers })
       .pipe(
         map(async (response) => {
           return response.data.access_token;
@@ -75,6 +72,7 @@ export class KeycloakService {
       )
       .pipe(
         catchError((error) => {
+          console.log(error);
           throw new HttpException(error.response.data, error.response.status);
         }),
       )
@@ -83,34 +81,32 @@ export class KeycloakService {
 
   async createUser(
     token: string,
-    request: RegisterRequest,
+    body: RegisterRequest,
     realm: string,
   ): Promise<any> {
-    const params = JSON.stringify({
-      firstName: request.firstName,
-      lastName: request.lastName,
-      email: request.email,
-      username: request.email,
+    const params = {
+      email: body.email,
+      username: body.email,
       emailVerified: true,
       enabled: true,
       credentials: [
         {
           type: 'password',
-          value: request.password,
+          value: body.password,
           temporary: false,
         },
       ],
-    });
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
     };
 
-    return this.httpService
-      .post(`${this.keycloakUrl}/admin/realms/${realm}/users`, params, config)
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
+    return await this.httpService
+      .post(`${this.keycloakUrl}/admin/realms/${realm}/users`, params, {
+        headers,
+      })
       .pipe(
         map((resp) => {
           return resp.data;

@@ -45,8 +45,7 @@ type JWTAccessTokenPayload = {
 export interface RegisterRequest {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  username: string;
 }
 
 @Controller('users')
@@ -93,21 +92,27 @@ export class UserController {
     }
   }
 
-  @Post()
+  @Post('register')
   async register(
-    @Body() request: RegisterRequest,
+    @Body() body: RegisterRequest,
     @Query('realm') realm: string,
     @Res() res: any,
   ): Promise<any> {
     try {
       const token = await this.keycloakService.getToken(realm);
+
       if (token) {
-        const result = this.keycloakService.createUser(token, request, realm);
+        const result = await this.keycloakService.createUser(
+          token,
+          body,
+          realm,
+        );
         console.log(result);
         return;
       }
 
-      // res.status(200);
+      res.status(200);
+      res.send({});
       // res.send(newData);
     } catch (err) {
       res.status(err.response.status);
