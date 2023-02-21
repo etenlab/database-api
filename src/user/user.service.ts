@@ -13,7 +13,7 @@ export class UserService {
   async ensureUserByEmail(
     userData: Pick<Users, 'email' | 'isEmailVerified' | 'username'>,
   ): Promise<Users> {
-    const upsertResult = await this.userRepository.upsert(
+    await this.userRepository.upsert(
       { ...userData, active: true, password: 'placeholder' },
       {
         conflictPaths: ['email'],
@@ -25,6 +25,10 @@ export class UserService {
       where: { email: userData.email },
     });
 
-    return user!;
+    if (!user) {
+      throw new Error('User not found after creation');
+    }
+
+    return user;
   }
 }

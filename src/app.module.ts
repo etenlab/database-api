@@ -1,7 +1,7 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { HttpModule, HttpService } from '@nestjs/axios';
+import { HttpModule } from '@nestjs/axios';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,9 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CronService } from './cron/cron.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProgressBibleLanguageDetailsService } from './progress_bible_language_details/progress_bible_language_details.service';
 import { ProgressBibleLanguageDetailModule } from './progress_bible_language_details/progress_bible_language_details.module';
-import { ProgressBibleLanguageDetail } from './model';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { KeycloakService } from './keycloak/keycloak.service';

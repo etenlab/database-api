@@ -23,7 +23,8 @@ export class ProgressBibleLanguageDetailsService {
     });
   }
 
-  public async insert(data: any) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public async insert(data: Record<string, any>) {
     return await this.repo.insert({
       unit_code: data.unit_code,
       unit_type: data.unit_type,

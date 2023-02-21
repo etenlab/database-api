@@ -8,8 +8,8 @@ import {
 
 @ObjectType()
 export class EntityAddress {
-  @Field((type) => Int) i: number;
-  @Field((type) => Int) c: number;
+  @Field(() => Int) i: number;
+  @Field(() => Int) c: number;
 }
 
 @InputType()
@@ -19,7 +19,7 @@ export class GenericInput {
 
 @ObjectType()
 export class GenericOutput {
-  @Field((type) => ErrorType) readonly error: ErrorType;
+  @Field(() => ErrorType) readonly error: ErrorType;
 }
 
 export enum ErrorType {

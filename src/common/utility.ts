@@ -1,17 +1,15 @@
-import { EntityAddress } from './types';
-import { sign } from 'jsonwebtoken';
-
-export function createToken(length: number = 64): string {
-  var result = '';
-  var characters =
+export function createToken(length = 64): string {
+  let result = '';
+  const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getBearer(req: any): string | undefined {
   const headers = req.req.rawHeaders as Array<string>;
   const Bearer = headers
@@ -33,6 +31,7 @@ export function validateEmail(email: string): boolean {
   return false;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function justBearerHeader(bearer: string): any {
   return {
     req: {

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
-import { justBearerHeader } from '../common/utility';
 import { PostgresService } from './postgres.service';
 
 @Injectable()
@@ -66,7 +65,7 @@ export class DatabaseVersionControlService {
   }
 
   async setVersionNumber(version: number) {
-    const res = await this.pg.pool.query(
+    await this.pg.pool.query(
       `
       insert into database_version_control(version) values($1);
     `,
@@ -77,6 +76,6 @@ export class DatabaseVersionControlService {
   async runSqlFile(path: string) {
     console.log('loading SQL:', path);
     const data = readFileSync(path, 'utf8');
-    const res = await this.pg.pool.query(data, []);
+    await this.pg.pool.query(data, []);
   }
 }

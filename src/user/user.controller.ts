@@ -1,5 +1,6 @@
-import { Body, Controller, Post, Query, Res, Response } from '@nestjs/common';
-import { ApiBody, ApiParam, ApiProperty } from '@nestjs/swagger';
+import { Body, Controller, Post, Query, Res } from '@nestjs/common';
+import { Response } from 'express';
+import { ApiProperty } from '@nestjs/swagger';
 import { KeycloakService } from '../keycloak/keycloak.service';
 import { decode } from 'jsonwebtoken';
 import { UserService } from './user.service';
@@ -59,14 +60,14 @@ export class UserController {
   @Post('login')
   async login(
     @Body() body: LoginDTO,
-    @Query('realm') realm: string,
-    @Res() res: any,
+    @Query('client-id') clientId: string,
+    @Res() res: Response,
   ) {
     try {
       const response = await this.keycloakService.authenticateUser(
         body.login,
         body.password,
-        realm,
+        clientId,
       );
 
       const { data } = response;
@@ -75,7 +76,8 @@ export class UserController {
 
       const decodedAccessToken = decode(accessToken, { complete: true });
 
-      const payload: JWTAccessTokenPayload = decodedAccessToken?.payload as any;
+      const payload: JWTAccessTokenPayload =
+        decodedAccessToken?.payload as JWTAccessTokenPayload;
 
       const existingUser = await this.userService.ensureUserByEmail({
         email: payload.email,
@@ -93,25 +95,25 @@ export class UserController {
     }
   }
 
-  @Post()
-  async register(
-    @Body() request: RegisterRequest,
-    @Query('realm') realm: string,
-    @Res() res: any,
-  ): Promise<any> {
-    try {
-      const token = await this.keycloakService.getToken(realm);
-      if (token) {
-        const result = this.keycloakService.createUser(token, request, realm);
-        console.log(result);
-        return;
-      }
+  // @Post()
+  // async register(
+  //   @Body() request: RegisterRequest,
+  //   @Query('realm') realm: string,
+  //   @Res() res: any,
+  // ): Promise<any> {
+  //   try {
+  //     const token = await this.keycloakService.getToken(realm);
+  //     if (token) {
+  //       const result = this.keycloakService.createUser(token, request, realm);
+  //       console.log(result);
+  //       return;
+  //     }
 
-      // res.status(200);
-      // res.send(newData);
-    } catch (err) {
-      res.status(err.response.status);
-      res.send(err?.response?.data?.error_description);
-    }
-  }
+  //     // res.status(200);
+  //     // res.send(newData);
+  //   } catch (err) {
+  //     res.status(err.response.status);
+  //     res.send(err?.response?.data?.error_description);
+  //   }
+  // }
 }
