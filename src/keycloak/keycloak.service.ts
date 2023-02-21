@@ -14,6 +14,7 @@ export interface RegisterRequest {
 @Injectable()
 export class KeycloakService {
   private keycloakUrl: string;
+  private keycloakRealm: string;
   private keycloakClientId: string;
   private keycloakClientSecret: string;
 
@@ -21,20 +22,26 @@ export class KeycloakService {
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {
-    this.keycloakUrl = this.configService.get('KEYCLOAK_URL')!;
-    this.keycloakClientId = this.configService.get('KEYCLOAK_CLIENT_ID')!;
-    this.keycloakClientSecret = this.configService.get(
-      'KEYCLOAK_CLIENT_SECRET',
-    )!;
+    this.keycloakUrl = this.configService.get('KEYCLOAK_URL') || '';
+    this.keycloakClientId = this.configService.get('KEYCLOAK_CLIENT_ID') || '';
+    this.keycloakClientSecret =
+      this.configService.get('KEYCLOAK_CLIENT_SECRET') || '';
+    this.keycloakRealm = this.configService.get('KEYCLOAK_REALM') || '';
 
-    if (
-      !this.keycloakUrl ||
-      !this.keycloakClientId ||
-      !this.keycloakClientSecret
-    ) {
-      throw new Error(
-        'Keycloak configuration is missing. Provide KEYCLOAK_URL, KEYCLOAK_CLIENT_ID environment variables. ',
-      );
+    if (!this.keycloakUrl) {
+      throw new Error('Missing env var KEYCLOAK_URL');
+    }
+
+    if (!this.keycloakClientId) {
+      throw new Error('Missing env var KEYCLOAK_CLIENT_ID');
+    }
+
+    if (!this.keycloakClientSecret) {
+      throw new Error('Missing env var KEYCLOAK_CLIENT_SECRET');
+    }
+
+    if (!this.keycloakRealm) {
+      throw new Error('Missing env var KEYCLOAK_REALM');
     }
   }
 
