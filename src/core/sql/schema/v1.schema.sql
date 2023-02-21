@@ -200,24 +200,24 @@ create table admin.node_types (
 
 create table admin.nodes (
   node_id bigserial primary key,
-  node_type varchar(32) references node_types(type_name)
+  node_type varchar(32) references admin.node_types(type_name)
 );
 
 create table admin.node_property_keys (
   node_property_key_id bigserial primary key,
-  node_id bigint references nodes(node_id) not null,
+  node_id bigint references admin.nodes(node_id) not null,
   property_key varchar(64)
 );
 
-create index idx_node_property_keys_node_id_key on node_property_keys (node_id);
+create index idx_node_property_keys_node_id_key on admin.node_property_keys (node_id);
 
 create table admin.node_property_values (
   node_property_value_id bigserial primary key,
-  node_property_key_id bigint references node_property_keys(node_property_key_id) not null,
+  node_property_key_id bigint references admin.node_property_keys(node_property_key_id) not null,
   property_value jsonb
 );
 
-create index idx_node_property_values_key_id on node_property_values (node_property_key_id);
+create index idx_node_property_values_key_id on admin.node_property_values (node_property_key_id);
 
 create table admin.relationship_types (
   type_name varchar(32) primary key
@@ -225,29 +225,29 @@ create table admin.relationship_types (
 
 create table admin.relationships (
   relationship_id bigserial primary key,
-  relationship_type varchar(32) references relationship_types(type_name),
-  from_node_id bigint references nodes(node_id),
-  to_node_id bigint references nodes(node_id)
+  relationship_type varchar(32) references admin.relationship_types(type_name),
+  from_node_id bigint references admin.nodes(node_id),
+  to_node_id bigint references admin.nodes(node_id)
 );
 
-create index idx_relationships_from_node_id on relationships (from_node_id);
-create index idx_relationships_to_node_id on relationships (to_node_id);
+create index idx_relationships_from_node_id on admin.relationships (from_node_id);
+create index idx_relationships_to_node_id on admin.relationships (to_node_id);
 
 create table admin.relationship_property_keys (
   relationship_property_key_id bigserial primary key,
-  relationship_id bigint references relationships(relationship_id) not null,
+  relationship_id bigint references admin.relationships(relationship_id) not null,
   property_key varchar(64)
 );
 
-create index idx_relationship_property_keys_relationship_id on relationship_property_keys (relationship_id);
+create index idx_relationship_property_keys_relationship_id on admin.relationship_property_keys (relationship_id);
 
 create table admin.relationship_property_values (
   relationship_property_value_id bigserial primary key,
-  relationship_property_key_id bigint references relationship_property_keys(relationship_property_key_id) not null,
+  relationship_property_key_id bigint references admin.relationship_property_keys(relationship_property_key_id) not null,
   property_value jsonb
 );
 
-create index idx_relationship_property_values_key_id on relationship_property_values (relationship_property_key_id);
+create index idx_relationship_property_values_key_id on admin.relationship_property_values (relationship_property_key_id);
 
 insert into admin.node_types (type_name) values
   ('word'),
@@ -388,6 +388,8 @@ create table admin.notifications (
 );
 
 -- DATASETS ---------------------------------------------------------
+
+SET search_path TO public;
 
 create type iso_639_2_entry_type as enum (
   'B', -- Bibliograph
@@ -984,10 +986,10 @@ SELECT n.node_id
 , jsonb_object_agg(npk.property_key, npv.property_value->'value')->>'strongs_def' AS strongs_def
 , jsonb_object_agg(npk.property_key, npv.property_value->'value')->>'kjv_def' AS kjv_def
 , jsonb_object_agg(npk.property_key, npv.property_value->'value')->>'strongs_id' AS strongs_id
-FROM nodes n
-LEFT JOIN node_property_keys npk ON
+FROM admin.nodes n
+LEFT JOIN admin.node_property_keys npk ON
 npk.node_id = n.node_id
-LEFT JOIN node_property_values npv ON
+LEFT JOIN admin.node_property_values npv ON
 npv.node_property_key_id = npk.node_property_key_id
 WHERE n.node_type = 'strongs-entry'
 GROUP BY n.node_id
