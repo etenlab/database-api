@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - dev
-      
+
 jobs:
   package:
     runs-on: ubuntu-latest
@@ -17,21 +17,14 @@ jobs:
         with:
           node-version: 16
 
-      - name: Install dependencies
-        run: |
-          if [ -e yarn.lock ]; then
-          yarn install --frozen-lockfile
-          elif [ -e package-lock.json ]; then
-          npm ci
-          else
-          npm i
-          fi
-
-      - name: Install Nest
-        run: npm i -g @nestjs/cli
-
       - name: Build
-        run: nest build 
+        run: npm ci
+
+      - name: Linter
+        run: npm run lint
+
+      - name: Check Format
+        run: npm run check-format
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -54,7 +47,7 @@ jobs:
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
           images: etenlab/database-api
-      
+
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
