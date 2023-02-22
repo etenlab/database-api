@@ -73,5 +73,5 @@ jobs:
         with:
           task-definition: task-definition.json
           service: database-api-service
-          cluster: fargate-cluster-1
+          cluster: dev-cluster
           wait-for-service-stability: true
