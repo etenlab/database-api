@@ -65,13 +65,13 @@ jobs:
 
       - name: Download task definition
         run: |
-          aws ecs describe-task-definition --task-definition database-api-td \
+          aws ecs describe-task-definition --task-definition databaseApi \
           --query taskDefinition > task-definition.json
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: task-definition.json
-          service: database-api-service
+          service: databaseApiService
           cluster: dev-cluster
           wait-for-service-stability: true
