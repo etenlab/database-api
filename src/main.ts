@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 dotenv.config();
 
-const corsAllowedOrigins =
+export const corsAllowedOrigins =
   process.env.CORS_ALLOW_ORIGINS?.split(',').filter((s) => s) || [];
 
 async function bootstrap() {
