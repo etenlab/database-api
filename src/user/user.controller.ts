@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Query, Res } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { ApiProperty } from '@nestjs/swagger';
 import { KeycloakService } from '../keycloak/keycloak.service';
@@ -79,6 +86,18 @@ export class UserController {
       const payload: JWTAccessTokenPayload =
         decodedAccessToken?.payload as JWTAccessTokenPayload;
 
+      if (!payload.email_verified) {
+        throw new BadRequestException('User email not verified');
+      }
+
+      if (!payload.email) {
+        throw new BadRequestException('User email not specified');
+      }
+
+      if (!payload.name) {
+        throw new BadRequestException('User name not specified');
+      }
+
       const existingUser = await this.userService.ensureUserByEmail({
         email: payload.email,
         isEmailVerified: payload.email_verified,
@@ -94,26 +113,4 @@ export class UserController {
       res.send(err?.response?.data?.error_description);
     }
   }
-
-  // @Post()
-  // async register(
-  //   @Body() request: RegisterRequest,
-  //   @Query('realm') realm: string,
-  //   @Res() res: any,
-  // ): Promise<any> {
-  //   try {
-  //     const token = await this.keycloakService.getToken(realm);
-  //     if (token) {
-  //       const result = this.keycloakService.createUser(token, request, realm);
-  //       console.log(result);
-  //       return;
-  //     }
-
-  //     // res.status(200);
-  //     // res.send(newData);
-  //   } catch (err) {
-  //     res.status(err.response.status);
-  //     res.send(err?.response?.data?.error_description);
-  //   }
-  // }
 }

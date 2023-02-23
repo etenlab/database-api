@@ -50,7 +50,15 @@ export class KeycloakService {
   ): Promise<AxiosResponse> {
     const url = `${this.keycloakUrl}/realms/${this.keycloakRealm}/protocol/openid-connect/token`;
 
-    const body = `client_id=${clientId}&grant_type=password&password=${password}&username=${login}`;
+    const secret = this.keycloakClients.find(
+      (client) => client.id === clientId,
+    )?.secret;
+
+    if (!secret) {
+      throw new HttpException('Invalid client id', 400);
+    }
+
+    const body = `client_id=${clientId}&client_secret=${secret}&grant_type=password&password=${password}&username=${login}`;
 
     return await this.httpService.axiosRef.post(url, body, {});
   }
