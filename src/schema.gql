@@ -9,14 +9,10 @@ enum ErrorType {
   UnknownError
 }
 
-input GenericInput {
-  id: Float!
-}
-
 type GenericOutput {
   error: ErrorType!
 }
 
 type Query {
-  asdf(input: GenericInput!): GenericOutput!
+  asdf: GenericOutput!
 }

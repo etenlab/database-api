@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('progress_bible_language_details')
+@Entity('progress_bible_language_details', { schema: 'public' })
 export class ProgressBibleLanguageDetail {
   @PrimaryGeneratedColumn({
     type: 'bigint',

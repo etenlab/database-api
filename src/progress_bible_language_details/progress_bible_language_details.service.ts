@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProgressBibleLanguageDetail } from '../model/progress_bible_language_detail.entity';
+import { ProgressBibleLanguageDetail } from '../model/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()
