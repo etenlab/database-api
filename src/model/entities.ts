@@ -19,6 +19,7 @@ import { ResetTokens } from './entities/ResetTokens';
 import { Tokens } from './entities/Tokens';
 import { WebsocketSessions } from './entities/WebsocketSessions';
 import { Files } from './entities/Files';
+import { ProgressBibleLanguageDetail } from './entities/ProgressBibleLanguageDetail';
 
 export const entities = [
   Users,
@@ -33,6 +34,7 @@ export const entities = [
   RelationshipPostFile,
   Discussions,
   Files,
+  ProgressBibleLanguageDetail,
 ];
 
 export {
@@ -48,6 +50,7 @@ export {
   RelationshipPostFile,
   Discussions,
   Files,
+  ProgressBibleLanguageDetail,
 };
 
 export default entities;

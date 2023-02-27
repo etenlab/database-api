@@ -2,7 +2,7 @@ import { Module, Global } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ProgressBibleLanguageDetailsService } from './progress_bible_language_details.service';
-import { ProgressBibleLanguageDetail } from '../model';
+import { ProgressBibleLanguageDetail } from '../model/entities';
 import { ProgressBibleLanguageDetailsController } from './progress_bible_language_details.controller';
 
 @Global()
