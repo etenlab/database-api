@@ -321,6 +321,24 @@ create table admin.votes (
   unique (user_id, ballot_entry_id)
 );
 
+create table admin.question_types (
+  question_type varchar(64) not null unique
+);
+
+create table admin.questions (
+  id bigserial primary key,
+  text text not null,
+  type varchar(64) not null references admin.question_type(question_type),
+  created_by varchar(512)
+);
+
+create table admin.answers (
+  id bigserial primary key,
+  question_id bigint not null references admin.questions(id),
+  text varchar(128),
+  feedback varchar(256)
+);
+
 -- discussion ---------------------------------------------------
 create table admin.discussions (
   id bigserial primary key,
