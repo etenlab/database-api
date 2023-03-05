@@ -328,7 +328,7 @@ create table admin.question_types (
 create table admin.questions (
   id bigserial primary key,
   text text not null,
-  type varchar(64) not null references admin.question_type(question_type),
+  type varchar(64) not null references admin.question_types(question_type),
   created_by varchar(512)
 );
 
